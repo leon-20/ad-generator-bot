@@ -1,0 +1,35 @@
+[
+  {
+    "date": "2026-01-05",
+    "project": "コラーゲンゼリー",
+    "copy": {
+      "catch_copy": "コラーゲンゼリーで変わる毎日",
+      "sub_copy": "30代女性のための特別なケア",
+      "image_composition": "淡いピンクと白を基調としたナチュラル・清潔感なデザイン。商品は中央。",
+      "image_prompt": "High quality ad banner for コラーゲンゼリー, 淡いピンクと白 color scheme, ナチュラル・清潔感 style, product in center."
+    },
+    "file_path": "./google_drive/広告バナー/2026-01/コラーゲンゼリー_2026-01-05.png"
+  },
+  {
+    "date": "2026-01-05",
+    "project": "青汁パウダー",
+    "copy": {
+      "catch_copy": "青汁パウダーで変わる毎日",
+      "sub_copy": "40代男性のための特別なケア",
+      "image_composition": "緑と黒を基調とした力強さ・安心感なデザイン。商品は中央。",
+      "image_prompt": "High quality ad banner for 青汁パウダー, 緑と黒 color scheme, 力強さ・安心感 style, product in center."
+    },
+    "file_path": "./google_drive/広告バナー/2026-01/青汁パウダー_2026-01-05.png"
+  },
+  {
+    "date": "2026-01-05",
+    "project": "コラーゲンゼリー",
+    "content": {
+      "キャッチコピー": "コラーゲンゼリーで、うるおい習慣。",
+      "サブコピー": "30代女性へ送る、内側からのケア",
+      "画像構成": "淡いピンクと白を背景に、ナチュラル・清潔感な雰囲気で商品を配置。光の反射でハリ感を演出。",
+      "prompt": "Professional advertisement banner for コラーゲンゼリー, 淡いピンクと白 theme, ナチュラル・清潔感 style, high quality, soft lighting, product centerpiece."
+    },
+    "file_path": "./google_drive/広告バナー/2026-01/コラーゲンゼリー_2026-01-05.png"
+  }
+]
