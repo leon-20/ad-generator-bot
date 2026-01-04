@@ -68,31 +68,14 @@ class DriveManager:
             print("[Drive] Dry-run（テスト）モードで実行します。")
 
     def get_weekly_folder_id(self, parent_id: Optional[str]) -> Optional[str]:
-        """今月のフォルダを取得、なければ作成します"""
+        """親フォルダIDをそのまま返す（サブフォルダは作成しない）"""
         if not self.service:
-            print(f"[Drive] Dry-run: 親フォルダ {parent_id} の下にフォルダを作成します")
+            print(f"[Drive] Dry-run: 親フォルダ {parent_id} を使用します")
             return "dry-run-folder-id"
-
-        current_month = datetime.datetime.now().strftime("%Y-%m")
-        query = f"mimeType='application/vnd.google-apps.folder' and name='{current_month}' and trashed=false"
-        if parent_id:
-            query += f" and '{parent_id}' in parents"
         
-        results = self.service.files().list(q=query, fields="files(id, name)").execute()
-        files = results.get('files', [])
-
-        if files:
-            print(f"[Drive] 既存のフォルダが見つかりました: {files[0]['name']} ({files[0]['id']})")
-            return files[0]['id']
-        else:
-            print(f"[Drive] 新しいフォルダを作成します: {current_month}")
-            file_metadata = {
-                'name': current_month,
-                'mimeType': 'application/vnd.google-apps.folder',
-                'parents': [parent_id] if parent_id else []
-            }
-            file = self.service.files().create(body=file_metadata, fields='id').execute()
-            return file.get('id')
+        # サブフォルダを作成せず、親フォルダIDをそのまま返す
+        print(f"[Drive] フォルダID {parent_id} を使用します")
+        return parent_id
 
     def save_image(self, image_data: bytes, filename: str, folder_id: str):
         """画像をGoogle Driveにアップロードします"""
