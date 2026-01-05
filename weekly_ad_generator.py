@@ -2,12 +2,14 @@ import os
 import datetime
 import json
 import base64
+import io
 from dataclasses import dataclass
 from typing import List, Dict, Optional
 import google.auth
 from googleapiclient.discovery import build
 from googleapiclient.http import MediaIoBaseUpload
-import io
+from google import genai
+from google.genai import types
 
 # --- 設定 ---
 GEMINI_API_KEY = os.getenv("GEMINI_API_KEY", "your_gemini_api_key_here")
@@ -23,33 +25,53 @@ class AdProject:
     taste: str
 
 class GeminiClient:
-    """Gemini テキスト生成クライアント（モック）"""
+    """Gemini テキスト生成クライアント（本番）"""
+    def __init__(self):
+        self.client = genai.Client(api_key=GEMINI_API_KEY)
+
     def generate_ad_copy(self, project: AdProject) -> Dict[str, str]:
         print(f"[Gemini] {project.product_name} のコピーを生成中...")
-        return {
-            "キャッチコピー": f"{project.product_name}で、うるおい習慣。",
-            "サブコピー": f"{project.target}へ送る、内側からのケア",
-            "画像構成": f"{project.color}を背景に、{project.taste}な雰囲気で商品を配置。光の反射でハリ感を演出。",
-            "prompt": f"Professional advertisement banner for {project.product_name}, {project.color} theme, {project.taste} style, high quality, soft lighting, product centerpiece."
-        }
+        prompt = f"""
+        以下の商品に関する広告バナーのコピー案を作成してください。
+        商品は "{project.product_name}" で、ターゲットは "{project.target}" です。
+        訴求ポイントは "{project.appeal}" です。
+        色調は "{project.color}"、雰囲気は "{project.taste}" にしてください。
+
+        出力は以下のJSON形式にしてください：
+        {{
+            "キャッチコピー": "ここにキャッチコピー",
+            "サブコピー": "ここにサブコピー",
+            "画像構成": "画像生成AIへの指示のための詳細な場面説明（日本語）",
+            "prompt": "English prompt for high-quality professional advertisement image generation. Describe the product centerpiece, lighting, and style clearly."
+        }}
+        """
+        response = self.client.models.generate_content(
+            model='gemini-2.0-flash',
+            contents=prompt,
+            config=types.GenerateContentConfig(
+                response_mime_type="application/json"
+            )
+        )
+        return json.loads(response.text)
 
 class NanobabanaClient:
-    """Nanobabana Pro 画像生成クライアント（モック）"""
+    """Nanobabana Pro 画像生成クライアント（本番）"""
+    def __init__(self):
+        self.client = genai.Client(api_key=NANOBABANA_API_KEY)
+
     def generate_image(self, prompt: str) -> bytes:
-        print(f"[Nanobabana Pro] 生成プロンプト: '{prompt}'...")
-        # 本番ではここで画像生成APIを叩き、バイトデータを取得します
-        try:
-            from PIL import Image, ImageDraw
-            img = Image.new('RGB', (800, 400), color=(240, 240, 240))
-            d = ImageDraw.Draw(img)
-            d.text((20, 20), "Nanobabana Pro Output (Cloud Run)", fill=(50, 50, 50))
-            d.text((20, 50), f"Prompt: {prompt[:60]}...", fill=(50, 50, 50))
-            
-            output_buffer = io.BytesIO()
-            img.save(output_buffer, format='PNG')
-            return output_buffer.getvalue()
-        except ImportError:
-            return b"Placeholder image content"
+        print(f"[Nanobabana Pro] '{prompt}' に基づいて画像を生成中...")
+        response = self.client.models.generate_content(
+            model='gemini-3-pro-image-preview',
+            contents=prompt
+        )
+        
+        # レスポンスから画像データを抽出
+        for part in response.candidates[0].content.parts:
+            if part.inline_data:
+                return part.inline_data.data
+        
+        raise Exception("画像が生成されませんでした。")
 
 class DriveManager:
     """Google Drive API マネージャー"""
