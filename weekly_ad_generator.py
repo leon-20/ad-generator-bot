@@ -93,7 +93,12 @@ class DriveManager:
             'parents': [folder_id]
         }
         media = MediaIoBaseUpload(io.BytesIO(image_data), mimetype='image/png', resumable=True)
-        file = self.service.files().create(body=file_metadata, media_body=media, fields='id').execute()
+        file = self.service.files().create(
+            body=file_metadata, 
+            media_body=media, 
+            fields='id',
+            supportsAllDrives=True
+        ).execute()
         print(f"[Drive] ファイルをアップロードしました: {filename} (ID: {file.get('id')})")
 
     def save_log(self, log_data: List[Dict], folder_id: str):
@@ -114,7 +119,12 @@ class DriveManager:
         log_bytes = json.dumps(log_data, indent=2, ensure_ascii=False).encode('utf-8')
         media = MediaIoBaseUpload(io.BytesIO(log_bytes), mimetype='application/json')
         
-        self.service.files().create(body=file_metadata, media_body=media, fields='id').execute()
+        self.service.files().create(
+            body=file_metadata, 
+            media_body=media, 
+            fields='id',
+            supportsAllDrives=True
+        ).execute()
         print(f"[Drive] 実行ログを保存しました: {log_filename}")
 
 def job():
